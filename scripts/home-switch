@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+source "$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)/lib.sh"
+
+ROOT="$(repo_root)"
+HOME_USER="${USERNAME:-${USER:-finleyv}}"
+
+require_command home-manager
+
+print_step "Switching Home Manager profile ${HOME_USER}"
+home-manager switch --flake "$(home_ref "${ROOT}" "${HOME_USER}")"
+

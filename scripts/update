@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+source "$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)/lib.sh"
+
+ROOT="$(repo_root)"
+
+require_command nix
+
+print_step "Updating flake inputs"
+nix flake update "${ROOT}"
+
+print_step "Checking flake"
+nix flake check "${ROOT}"
+

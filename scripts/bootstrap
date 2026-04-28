@@ -1,0 +1,84 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+source "$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)/lib.sh"
+
+ROOT="$(repo_root)"
+HOST_NAME="${HOST:-nixos}"
+MODE="boot"
+REGENERATE_HARDWARE=1
+
+usage() {
+  cat <<'USAGE'
+Usage: scripts/bootstrap [--mode boot|switch|test] [--skip-hardware]
+
+Prepares a cloned flake on a NixOS machine:
+  - verifies Nix flakes are available
+  - regenerates hardware-configuration.nix by default
+  - backs up the previous hardware config if it exists
+  - runs nixos-rebuild for the selected mode
+
+Environment:
+  HOST      NixOS flake output to deploy, default: nixos
+USAGE
+}
+
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    --mode)
+      MODE="${2:-}"
+      shift 2
+      ;;
+    --skip-hardware)
+      REGENERATE_HARDWARE=0
+      shift
+      ;;
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    *)
+      echo "Unknown argument: $1" >&2
+      usage >&2
+      exit 1
+      ;;
+  esac
+done
+
+case "${MODE}" in
+  boot|switch|test) ;;
+  *)
+    echo "Invalid mode: ${MODE}" >&2
+    exit 1
+    ;;
+esac
+
+require_command nix
+require_command nixos-rebuild
+
+print_step "Checking Nix flakes"
+nix flake metadata "${ROOT}" >/dev/null
+
+if [ "${REGENERATE_HARDWARE}" -eq 1 ]; then
+  require_command nixos-generate-config
+
+  HARDWARE_FILE="${ROOT}/hardware-configuration.nix"
+  if [ -e "${HARDWARE_FILE}" ]; then
+    BACKUP_FILE="${HARDWARE_FILE}.backup-$(date +%Y%m%d-%H%M%S)"
+    print_step "Backing up ${HARDWARE_FILE}"
+    cp -- "${HARDWARE_FILE}" "${BACKUP_FILE}"
+  fi
+
+  print_step "Regenerating hardware-configuration.nix"
+  TMP_FILE="$(mktemp)"
+  sudo nixos-generate-config --show-hardware-config > "${TMP_FILE}"
+  mv -- "${TMP_FILE}" "${HARDWARE_FILE}"
+fi
+
+print_step "Deploying ${HOST_NAME} with nixos-rebuild ${MODE}"
+sudo nixos-rebuild "${MODE}" --flake "$(flake_ref "${ROOT}" "${HOST_NAME}")"
+
+if [ "${MODE}" = "boot" ]; then
+  print_step "Boot generation is ready; reboot when convenient"
+fi
+

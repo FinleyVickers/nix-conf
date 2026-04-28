@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+source "$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)/lib.sh"
+
+ROOT="$(repo_root)"
+HOST_NAME="${HOST:-nixos}"
+
+require_command nixos-rebuild
+
+print_step "Switching NixOS system ${HOST_NAME}"
+sudo nixos-rebuild switch --flake "$(flake_ref "${ROOT}" "${HOST_NAME}")"
+
