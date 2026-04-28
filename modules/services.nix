@@ -22,6 +22,16 @@
   services.gvfs.enable = true;
   services.udisks2.enable = true;
 
+  services.openssh = {
+    enable = true;
+    openFirewall = true;
+    settings = {
+      PasswordAuthentication = false;
+      KbdInteractiveAuthentication = false;
+      PermitRootLogin = "no";
+    };
+  };
+
   services.greetd = {
     enable = true;
     useTextGreeter = true;
