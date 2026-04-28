@@ -29,6 +29,39 @@ let
     [mcp_servers.nixos.tools.nix]
     approval_mode = "approve"
   '';
+  powerMenu = pkgs.writeShellScript "waybar-power-menu" ''
+    choice="$(
+      printf '%s\n' \
+        "Lock" \
+        "Logout" \
+        "Suspend" \
+        "Hibernate" \
+        "Reboot" \
+        "Shutdown" |
+        ${pkgs.fuzzel}/bin/fuzzel --dmenu --prompt "Power: "
+    )"
+
+    case "$choice" in
+      "Lock")
+        ${pkgs.niri}/bin/niri msg action power-off-monitors
+        ;;
+      "Logout")
+        ${pkgs.niri}/bin/niri msg action quit
+        ;;
+      "Suspend")
+        ${pkgs.systemd}/bin/systemctl suspend
+        ;;
+      "Hibernate")
+        ${pkgs.systemd}/bin/systemctl hibernate
+        ;;
+      "Reboot")
+        ${pkgs.systemd}/bin/systemctl reboot
+        ;;
+      "Shutdown")
+        ${pkgs.systemd}/bin/systemctl poweroff
+        ;;
+    esac
+  '';
 in
 {
   home.username = "finleyv";
@@ -133,14 +166,31 @@ in
       mainBar = {
         layer = "top";
         position = "top";
-        height = 34;
-        margin = "10 14 0 14";
-        modules-left = [ "niri/workspaces" "niri/window" ];
-        modules-center = [ "mpris" "clock" ];
-        modules-right = [ "pulseaudio" "network" "cpu" "memory" "battery" "tray" "custom/power" ];
+        height = 30;
+        spacing = 4;
+        modules-left = [ "custom/nixos" "niri/workspaces" ];
+        modules-center = [ "niri/window" "mpris" ];
+        modules-right = [ "idle_inhibitor" "pulseaudio" "network" "cpu" "memory" "battery" "tray" "clock" "custom/power" ];
+        "custom/nixos" = {
+          format = "󱄅";
+          tooltip = true;
+          tooltip-format = "NixOS";
+        };
+        "niri/workspaces" = {
+          format = "{icon}";
+          format-icons = {
+            active = "";
+            default = "";
+          };
+        };
+        "niri/window" = {
+          format = "{}";
+          max-length = 64;
+        };
         clock = {
-          format = "{:%a %b %d  %H:%M}";
-          tooltip-format = "{:%Y-%m-%d}";
+          format = "{:%H:%M | %e %B}";
+          tooltip-format = "{:%Y %B}\n{calendar}";
+          format-alt = "{:%Y-%m-%d}";
         };
         mpris = {
           format = "{player_icon} {dynamic}";
@@ -149,33 +199,74 @@ in
           dynamic-order = [ "title" "artist" ];
           max-length = 48;
           player-icons = {
-            default = "MEDIA";
-            firefox = "WEB";
-            spotify = "SPOT";
+            default = "";
+            firefox = "";
+            spotify = "";
           };
           status-icons = {
-            paused = "PAUSE";
+            paused = "";
           };
           on-click = "${pkgs.playerctl}/bin/playerctl play-pause";
           on-click-right = "${pkgs.playerctl}/bin/playerctl next";
           on-click-middle = "${pkgs.playerctl}/bin/playerctl previous";
           tooltip-format = "{player}: {title} - {artist}";
         };
-        cpu.format = "CPU {usage}%";
-        memory.format = "RAM {}%";
+        idle_inhibitor = {
+          format = "{icon}";
+          format-icons = {
+            activated = "";
+            deactivated = "";
+          };
+        };
+        cpu = {
+          format = " {usage}%";
+          tooltip = true;
+        };
+        memory = {
+          format = " {}%";
+          tooltip = true;
+        };
         network = {
-          format-wifi = "{essid} {signalStrength}%";
-          format-ethernet = "wired";
-          format-disconnected = "offline";
+          format-wifi = " {essid} ({signalStrength}%)";
+          format-ethernet = "{ipaddr}/{cidr} 󰈀";
+          tooltip-format = "{ifname} via {gwaddr}";
+          format-linked = "{ifname} (No IP) 󰈀";
+          format-disconnected = "Disconnected ";
         };
         pulseaudio = {
-          format = "VOL {volume}%";
-          format-muted = "muted";
+          format = "{icon} {volume}%";
+          format-bluetooth = "{icon} {volume}% ";
+          format-bluetooth-muted = "󰝟 {icon} ";
+          format-muted = "󰝟";
+          format-source = " {volume}%";
+          format-source-muted = "";
+          format-icons = {
+            headphone = "";
+            hands-free = "";
+            headset = "";
+            phone = "";
+            portable = "";
+            car = "";
+            default = [ "" "" "" ];
+          };
+          on-click = "${pkgs.pavucontrol}/bin/pavucontrol";
+        };
+        battery = {
+          states = {
+            warning = 30;
+            critical = 15;
+          };
+          format = "{icon} {capacity}%";
+          format-full = "{icon} {capacity}%";
+          format-charging = "󰂄 {capacity}%";
+          format-plugged = " {capacity}%";
+          format-alt = "{time} {icon}";
+          format-icons = [ "" "" "" "" "" ];
         };
         "custom/power" = {
-          format = "PWR";
+          format = "";
           tooltip = "Power menu";
-          on-click = "${pkgs.wlogout}/bin/wlogout";
+          on-click = "${powerMenu}";
         };
       };
     };
@@ -186,52 +277,117 @@ in
         font-family: "JetBrainsMono Nerd Font";
         font-size: 13px;
         min-height: 0;
+        transition: background-color .3s ease-out;
       }
 
       window#waybar {
-        background: transparent;
-        color: ${catppuccin.text};
+        background: rgba(26, 27, 38, 0.75);
+        color: #c0caf5;
+        transition: background-color .5s;
       }
 
-      #workspaces,
-      #window,
-      #clock,
-      #mpris,
-      #pulseaudio,
-      #network,
-      #cpu,
-      #memory,
-      #battery,
-      #tray,
-      #custom-power {
-        background: alpha(${catppuccin.base}, 0.92);
-        border: 1px solid ${catppuccin.surface0};
-        border-radius: 14px;
-        margin: 0 4px;
-        padding: 6px 12px;
+      .modules-left,
+      .modules-center,
+      .modules-right {
+        background: rgba(0, 0, 8, .7);
+        margin: 3px 8px;
+        padding: 0 4px;
+        border-radius: 12px;
       }
 
-      #workspaces button {
-        color: ${catppuccin.subtext1};
+      .modules-left {
+        padding: 0;
+      }
+
+      .modules-center {
         padding: 0 8px;
       }
 
-      #workspaces button.active {
-        background: ${catppuccin.mauve};
-        color: ${catppuccin.base};
-        border-radius: 999px;
+      #clock,
+      #battery,
+      #cpu,
+      #memory,
+      #network,
+      #pulseaudio,
+      #tray,
+      #idle_inhibitor,
+      #window,
+      #mpris,
+      #custom-power {
+        padding: 0 10px;
+        border-radius: 12px;
       }
 
-      #clock {
-        color: ${catppuccin.lavender};
+      #clock:hover,
+      #battery:hover,
+      #cpu:hover,
+      #memory:hover,
+      #network:hover,
+      #pulseaudio:hover,
+      #tray:hover,
+      #idle_inhibitor:hover,
+      #window:hover,
+      #mpris:hover,
+      #custom-power:hover {
+        background: rgba(26, 27, 38, 0.9);
+      }
+
+      #workspaces button {
+        background: transparent;
+        color: #c0caf5;
+        border: none;
+        border-radius: 12px;
+        font-size: 14px;
+        font-weight: 900;
+        padding: 0 6px;
+      }
+
+      #workspaces button.active {
+        background: #13131d;
+        color: #c0caf5;
+      }
+
+      #workspaces button:hover {
+        background: #11111b;
+        color: #cdd6f4;
+        box-shadow: none;
+      }
+
+      #custom-nixos {
+        margin-left: 5px;
+        padding: 0 8px;
+        font-size: 19px;
+        transition: color .5s;
+      }
+
+      #custom-nixos:hover {
+        color: #1793d1;
+      }
+
+      #clock,
+      #custom-power {
+        color: #7dcfff;
       }
 
       #mpris {
-        color: ${catppuccin.green};
+        color: #9ece6a;
+      }
+
+      #battery.warning {
+        color: #e0af68;
+      }
+
+      #battery.critical,
+      #network.disconnected {
+        color: #f7768e;
+      }
+
+      #idle_inhibitor.activated {
+        color: #bb9af7;
       }
 
       #custom-power {
-        color: ${catppuccin.red};
+        font-size: 14px;
       }
     '';
   };
