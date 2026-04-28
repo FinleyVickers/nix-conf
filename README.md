@@ -7,8 +7,9 @@ Personal NixOS and Home Manager configuration for the `nixos` host and `finleyv`
 - `flake.nix` defines the NixOS system, Home Manager profile, and local packages.
 - `configuration.nix` is the main system module.
 - `hardware-configuration.nix` is machine-specific generated hardware config.
-- `home.nix` contains the user environment, Waybar, Niri, shell, and desktop config.
-- `modules/` contains focused system modules.
+- `home.nix` is the Home Manager entrypoint with shared values and package list.
+- `modules/` contains focused NixOS and Home Manager modules.
+- `modules/home/` contains user modules for programs, Waybar, desktop theming, and Niri.
 - `pkgs/` contains local package definitions.
 - `scripts/` contains deployment helpers.
 
@@ -75,4 +76,3 @@ sudo nixos-rebuild switch --flake .#nixos
 home-manager switch --flake .#finleyv
 nix flake check
 ```
-
