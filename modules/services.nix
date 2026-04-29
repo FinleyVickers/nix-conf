@@ -32,6 +32,11 @@
     };
   };
 
+  services.tailscale = {
+    enable = true;
+    openFirewall = true;
+  };
+
   services.greetd = {
     enable = true;
     useTextGreeter = true;
