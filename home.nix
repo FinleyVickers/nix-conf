@@ -29,6 +29,18 @@ let
     [mcp_servers.nixos.tools.nix]
     approval_mode = "approve"
   '';
+  piPackages = [
+    # "npm:pi-extmgr"
+    # "npm:some-pi-package@1.2.3"
+    # "git:github.com/user/repo@v1"
+  ];
+  piSettingsTemplate = pkgs.writeText "pi-settings.json" (builtins.toJSON {
+    packages = piPackages;
+    extensions = [ ];
+    skills = [ ];
+    prompts = [ ];
+    themes = [ ];
+  });
   powerMenu = pkgs.writeShellScript "waybar-power-menu" ''
     choice="$(
       printf '%s\n' \
@@ -65,7 +77,7 @@ let
 in
 {
   imports = [
-    (import ./modules/home/programs.nix { inherit lib pkgs codexConfigTemplate; })
+    (import ./modules/home/programs.nix { inherit lib pkgs codexConfigTemplate piSettingsTemplate; })
     (import ./modules/home/waybar.nix { inherit pkgs powerMenu; })
     (import ./modules/home/desktop.nix { inherit pkgs catppuccin; })
     (import ./modules/home/niri.nix { inherit pkgs catppuccin wallpaper; })

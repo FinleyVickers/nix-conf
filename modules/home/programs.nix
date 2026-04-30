@@ -1,4 +1,4 @@
-{ lib, pkgs, codexConfigTemplate }:
+{ lib, pkgs, codexConfigTemplate, piSettingsTemplate }:
 
 {
   # Codex updates this file itself when you change models interactively, so it
@@ -11,6 +11,20 @@
     if [ ! -e "$target" ] || [ -L "$target" ]; then
       rm -f "$target"
       cp ${codexConfigTemplate} "$target"
+    fi
+  '';
+
+  # Pi updates this file when packages/extensions are installed through the CLI,
+  # so seed it as a normal writable file instead of an immutable store symlink.
+  home.activation.piWritableSettings = lib.hm.dag.entryAfter [ "linkGeneration" ] ''
+    target="$HOME/.pi/agent/settings.json"
+
+    mkdir -p "$HOME/.pi/agent"
+
+    if [ ! -e "$target" ] || [ -L "$target" ]; then
+      rm -f "$target"
+      cp ${piSettingsTemplate} "$target"
+      chmod u+w "$target"
     fi
   '';
 
@@ -115,4 +129,3 @@
     '';
   };
 }
-
