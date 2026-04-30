@@ -6,4 +6,4 @@ result-*
 .direnv/
 .envrc
 hardware-configuration.nix.backup-*
-.codex/
+.codex
