@@ -35,6 +35,7 @@
   environment.systemPackages = with pkgs; [
     heroic
     mangohud
+    prismlauncher
     protonup-qt
     winetricks
     wineWow64Packages.staging
