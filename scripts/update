@@ -8,8 +8,7 @@ ROOT="$(repo_root)"
 require_command nix
 
 print_step "Updating flake inputs"
-nix flake update "${ROOT}"
+nix "${FLAKE_FEATURE_FLAGS[@]}" flake update "${ROOT}"
 
 print_step "Checking flake"
-nix flake check "${ROOT}"
-
+nix "${FLAKE_FEATURE_FLAGS[@]}" flake check "${ROOT}"

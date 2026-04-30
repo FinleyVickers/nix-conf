@@ -9,5 +9,4 @@ HOME_USER="${USERNAME:-${USER:-finleyv}}"
 require_command home-manager
 
 print_step "Switching Home Manager profile ${HOME_USER}"
-home-manager switch --flake "$(home_ref "${ROOT}" "${HOME_USER}")"
-
+home-manager "${FLAKE_FEATURE_FLAGS[@]}" switch --flake "$(home_ref "${ROOT}" "${HOME_USER}")"

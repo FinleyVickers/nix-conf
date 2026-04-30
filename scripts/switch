@@ -9,5 +9,4 @@ HOST_NAME="${HOST:-nixos}"
 require_command nixos-rebuild
 
 print_step "Switching NixOS system ${HOST_NAME}"
-sudo nixos-rebuild switch --flake "$(flake_ref "${ROOT}" "${HOST_NAME}")"
-
+sudo nixos-rebuild "${FLAKE_FEATURE_FLAGS[@]}" switch --flake "$(flake_ref "${ROOT}" "${HOST_NAME}")"

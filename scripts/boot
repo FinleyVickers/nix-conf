@@ -9,5 +9,4 @@ HOST_NAME="${HOST:-nixos}"
 require_command nixos-rebuild
 
 print_step "Building NixOS system ${HOST_NAME} for next boot"
-sudo nixos-rebuild boot --flake "$(flake_ref "${ROOT}" "${HOST_NAME}")"
-
+sudo nixos-rebuild "${FLAKE_FEATURE_FLAGS[@]}" boot --flake "$(flake_ref "${ROOT}" "${HOST_NAME}")"

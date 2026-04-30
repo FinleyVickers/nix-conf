@@ -53,12 +53,18 @@ On a fresh NixOS install, clone this repo and run:
 ./scripts/bootstrap
 ```
 
-By default, this regenerates `hardware-configuration.nix`, backs up the old copy if present, and runs `nixos-rebuild boot --flake .#nixos`.
+By default, this regenerates `hardware-configuration.nix`, backs up the old copy if present, runs `nixos-rebuild boot --flake .#nixos`, and stubs `/etc/nixos/configuration.nix` so future plain `nixos-rebuild` runs fail with the flake command to use.
 
 To activate immediately instead:
 
 ```sh
 ./scripts/bootstrap --mode switch
+```
+
+To leave the legacy `/etc/nixos/configuration.nix` untouched:
+
+```sh
+./scripts/bootstrap --keep-legacy-config
 ```
 
 Useful environment overrides:
