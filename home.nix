@@ -99,6 +99,7 @@ in
     nerd-fonts.jetbrains-mono
     nodejs
     pavucontrol
+    pi-coding-agent
     playerctl
     protonup-qt
     ripgrep
