@@ -33,6 +33,12 @@
     configPath = ".mozilla/firefox";
     profiles.finleyv = {
       isDefault = true;
+      extensions.packages = with pkgs.nur.repos.rycee.firefox-addons; [
+        bitwarden
+        sponsorblock
+        tampermonkey
+        ublock-origin
+      ];
       settings = {
         "browser.theme.content-theme" = 0;
         "browser.theme.toolbar-theme" = 0;

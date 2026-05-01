@@ -7,9 +7,10 @@
       url = "github:nix-community/home-manager/master";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    nur.url = "github:nix-community/NUR";
   };
 
-  outputs = { nixpkgs, home-manager, ... }:
+  outputs = { nixpkgs, home-manager, nur, ... }:
     let
       systems = [ "x86_64-linux" ];
       forAllSystems = nixpkgs.lib.genAttrs systems;
@@ -31,6 +32,7 @@
           pkgs = import nixpkgs {
             system = "x86_64-linux";
             config.allowUnfree = true;
+            overlays = [ nur.overlays.default ];
           };
           modules = [ ./home.nix ];
         };
@@ -44,6 +46,7 @@
           ./configuration.nix
           home-manager.nixosModules.home-manager
           {
+            nixpkgs.overlays = [ nur.overlays.default ];
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
             home-manager.users.finleyv = import ./home.nix;
