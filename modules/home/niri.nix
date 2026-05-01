@@ -66,7 +66,6 @@
 
     window-rule {
       geometry-corner-radius 14
-      clip-to-geometry true
     }
 
     spawn-at-startup "xwayland-satellite"
@@ -167,4 +166,3 @@
     }
   '';
 }
-
