@@ -96,9 +96,11 @@ in
   };
 
   home.packages = with pkgs; [
+    _7zz
     brightnessctl
     discord
     fd
+    file-roller
     fuzzel
     gamescope
     git
