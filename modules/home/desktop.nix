@@ -35,6 +35,63 @@
     style.name = "adwaita-dark";
   };
 
+  xdg.mimeApps = {
+    enable = true;
+    associations.added = {
+      "x-scheme-handler/http" = [ "firefox.desktop" ];
+      "x-scheme-handler/https" = [ "firefox.desktop" ];
+      "x-scheme-handler/chrome" = [ "firefox.desktop" ];
+      "text/html" = [ "firefox.desktop" ];
+      "application/x-extension-htm" = [ "firefox.desktop" ];
+      "application/x-extension-html" = [ "firefox.desktop" ];
+      "application/x-extension-shtml" = [ "firefox.desktop" ];
+      "application/xhtml+xml" = [ "firefox.desktop" ];
+      "application/x-extension-xhtml" = [ "firefox.desktop" ];
+      "application/x-extension-xht" = [ "firefox.desktop" ];
+      "application/x-7z-compressed" = [ "org.gnome.FileRoller.desktop" ];
+      "application/x-7z-compressed-tar" = [ "org.gnome.FileRoller.desktop" ];
+      "application/zip" = [ "org.gnome.FileRoller.desktop" ];
+      "application/x-zip" = [ "org.gnome.FileRoller.desktop" ];
+      "application/x-zip-compressed" = [ "org.gnome.FileRoller.desktop" ];
+      "application/vnd.rar" = [ "org.gnome.FileRoller.desktop" ];
+      "application/x-rar" = [ "org.gnome.FileRoller.desktop" ];
+      "application/x-rar-compressed" = [ "org.gnome.FileRoller.desktop" ];
+      "application/x-tar" = [ "org.gnome.FileRoller.desktop" ];
+      "application/gzip" = [ "org.gnome.FileRoller.desktop" ];
+      "application/x-gzip" = [ "org.gnome.FileRoller.desktop" ];
+      "application/x-compressed-tar" = [ "org.gnome.FileRoller.desktop" ];
+      "application/x-bzip-compressed-tar" = [ "org.gnome.FileRoller.desktop" ];
+      "application/x-xz-compressed-tar" = [ "org.gnome.FileRoller.desktop" ];
+    };
+    defaultApplications = {
+      "x-scheme-handler/http" = [ "firefox.desktop" ];
+      "x-scheme-handler/https" = [ "firefox.desktop" ];
+      "x-scheme-handler/chrome" = [ "firefox.desktop" ];
+      "text/html" = [ "firefox.desktop" ];
+      "application/x-extension-htm" = [ "firefox.desktop" ];
+      "application/x-extension-html" = [ "firefox.desktop" ];
+      "application/x-extension-shtml" = [ "firefox.desktop" ];
+      "application/xhtml+xml" = [ "firefox.desktop" ];
+      "application/x-extension-xhtml" = [ "firefox.desktop" ];
+      "application/x-extension-xht" = [ "firefox.desktop" ];
+      "application/x-7z-compressed" = [ "org.gnome.FileRoller.desktop" ];
+      "application/x-7z-compressed-tar" = [ "org.gnome.FileRoller.desktop" ];
+      "application/zip" = [ "org.gnome.FileRoller.desktop" ];
+      "application/x-zip" = [ "org.gnome.FileRoller.desktop" ];
+      "application/x-zip-compressed" = [ "org.gnome.FileRoller.desktop" ];
+      "application/vnd.rar" = [ "org.gnome.FileRoller.desktop" ];
+      "application/x-rar" = [ "org.gnome.FileRoller.desktop" ];
+      "application/x-rar-compressed" = [ "org.gnome.FileRoller.desktop" ];
+      "application/x-tar" = [ "org.gnome.FileRoller.desktop" ];
+      "application/gzip" = [ "org.gnome.FileRoller.desktop" ];
+      "application/x-gzip" = [ "org.gnome.FileRoller.desktop" ];
+      "application/x-compressed-tar" = [ "org.gnome.FileRoller.desktop" ];
+      "application/x-bzip-compressed-tar" = [ "org.gnome.FileRoller.desktop" ];
+      "application/x-xz-compressed-tar" = [ "org.gnome.FileRoller.desktop" ];
+    };
+  };
+  xdg.configFile."mimeapps.list".force = true;
+
   services.mako = {
     enable = true;
     settings = {
@@ -149,4 +206,3 @@
     }
   '';
 }
-
