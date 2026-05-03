@@ -41,44 +41,10 @@ let
     prompts = [ ];
     themes = [ ];
   });
-  powerMenu = pkgs.writeShellScript "waybar-power-menu" ''
-    choice="$(
-      printf '%s\n' \
-        "Lock" \
-        "Logout" \
-        "Suspend" \
-        "Hibernate" \
-        "Reboot" \
-        "Shutdown" |
-        ${pkgs.fuzzel}/bin/fuzzel --dmenu --prompt "Power: "
-    )"
-
-    case "$choice" in
-      "Lock")
-        ${pkgs.niri}/bin/niri msg action power-off-monitors
-        ;;
-      "Logout")
-        ${pkgs.niri}/bin/niri msg action quit
-        ;;
-      "Suspend")
-        ${pkgs.systemd}/bin/systemctl suspend
-        ;;
-      "Hibernate")
-        ${pkgs.systemd}/bin/systemctl hibernate
-        ;;
-      "Reboot")
-        ${pkgs.systemd}/bin/systemctl reboot
-        ;;
-      "Shutdown")
-        ${pkgs.systemd}/bin/systemctl poweroff
-        ;;
-    esac
-  '';
 in
 {
   imports = [
     (import ./modules/home/programs.nix { inherit lib pkgs codexConfigTemplate piSettingsTemplate; })
-    (import ./modules/home/waybar.nix { inherit pkgs powerMenu; })
     (import ./modules/home/desktop.nix { inherit pkgs catppuccin; })
     (import ./modules/home/niri.nix { inherit pkgs catppuccin wallpaper; })
   ];
@@ -103,6 +69,7 @@ in
     file-roller
     fuzzel
     gamescope
+    gedit
     git
     grim
     heroic

@@ -5,6 +5,7 @@
     enable = true;
     useNautilus = true;
   };
+  programs.dms-shell.enable = true;
   programs.dconf.enable = true;
 
   services.printing.enable = true;

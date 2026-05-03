@@ -65,11 +65,10 @@
     }
 
     window-rule {
-      geometry-corner-radius 14
+      geometry-corner-radius 0
     }
 
     spawn-at-startup "xwayland-satellite"
-    spawn-at-startup "waybar"
     spawn-at-startup "mako"
     spawn-at-startup "swaybg" "-i" "${wallpaper}" "-m" "fill"
 
